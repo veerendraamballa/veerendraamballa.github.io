@@ -1,0 +1,294 @@
+/* ==========================================================================
+   Contact — three places, one visual language.
+     header    a quiet LinkedIn link and a "Get in touch" pill, on screen one
+     dock      a fixed pair that follows the scroll between hero and finale
+     finale    the full contact block on the closing poster
+   Rules held throughout: targets are at least 40px tall (44px on touch),
+   focus is always visible, and the primary action is the only filled shape.
+   ========================================================================== */
+
+.ic {
+  width: 0.95em;
+  height: 0.95em;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+:where(.hdr__link, .hdr__cta, .dock__btn, .btn, .copy, .menu__c):focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ---- header --------------------------------------------------------------- */
+.hdr__meta {
+  display: flex;
+  align-items: center;
+  justify-items: initial;
+  gap: clamp(10px, 1.3vw, 22px);
+}
+.hdr__link,
+.hdr__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--ui);
+  font-size: clamp(9px, 0.72vw, 11.5px);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hdr__link {
+  padding: 10px 0;
+  color: var(--dim);
+  transition: color 0.3s var(--ease-out);
+}
+.hdr__link:hover { color: var(--paper); }
+.hdr__link .ic { transition: translate 0.3s var(--ease-out); }
+.hdr__link:hover .ic { translate: 2px -2px; }
+
+.hdr__cta {
+  min-height: 34px;
+  padding: 0 1.5em 0 1.76em;       /* optical: tracking adds space on the right */
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  color: var(--paper);
+  background: rgba(222, 27, 28, 0.14);
+  transition: background 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.hdr__cta:hover {
+  background: var(--ink);
+  box-shadow: 0 0 22px rgba(255, 42, 43, 0.45);
+}
+.hdr__cta:active { background: #b81516; }
+
+/* ---- mobile menu ---------------------------------------------------------- */
+.menu__contact {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0 0;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.34s;
+}
+.is-menu .menu__contact { opacity: 1; }
+.menu a.menu__c {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  min-height: 46px;
+  padding: 0 1.4em;
+  border: 1px solid rgba(237, 237, 237, 0.4);
+  border-radius: 999px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--paper);
+  cursor: pointer;
+}
+.menu a.menu__c--solid { background: var(--ink); border-color: var(--ink); }
+.menu a.menu__c:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---- the dock ------------------------------------------------------------- */
+.dock {
+  position: fixed;
+  right: max(var(--edge), env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 70;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(10, 6, 6, 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.45s var(--ease-out), translate 0.55s var(--ease-out);
+  pointer-events: none;
+}
+.dock[hidden] { display: none; }
+.dock.is-on { opacity: 1; translate: 0 0; pointer-events: auto; }
+
+.dock__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  min-height: 40px;
+  padding: 0 1.25em;
+  border-radius: 999px;
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.dock__btn:hover { background: rgba(255, 255, 255, 0.10); }
+.dock__btn--solid { background: var(--ink); }
+.dock__btn--solid:hover { background: var(--ink-hot); }
+
+/* ---- the finale block ------------------------------------------------------ */
+.fin__cta {
+  position: absolute;
+  z-index: 2;
+  left: clamp(22px, 6vw, 110px);
+  top: clamp(64px, 13vh, 150px);
+  width: min(40vw, 560px);
+  color: #170a0a;
+  pointer-events: auto;
+}
+.fin__ctaOver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(10px, 1.6vh, 20px);
+  font-family: var(--ui);
+  font-size: clamp(10px, 0.8vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: #5c3a35;
+}
+.fin__ctaOver::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1f9d55;
+  box-shadow: 0 0 0 4px rgba(31, 157, 85, 0.2);
+}
+.fin__ctaHead {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: clamp(60px, min(9.5vw, 16.5vh), 170px);
+  line-height: 0.88;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  color: #c4161a;
+}
+.fin__ctaSub {
+  margin: clamp(14px, 2.4vh, 26px) 0 0;
+  font-family: var(--ui);
+  font-size: clamp(13px, 1.05vw, 17px);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: #3a2422;
+  max-width: 34ch;
+}
+.fin__ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(18px, 3vh, 34px);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8em;
+  min-height: 48px;
+  padding: 0 1.5em;
+  border-radius: 999px;
+  border: 1.5px solid #170a0a;
+  font-family: var(--ui);
+  font-size: clamp(12px, 0.92vw, 14.5px);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: #170a0a;
+  transition: background 0.25s ease, color 0.25s ease, translate 0.25s var(--ease-out),
+              box-shadow 0.25s ease;
+}
+.btn--solid { background: #170a0a; color: #f4ead9; }
+.btn--solid:hover { background: #c4161a; border-color: #c4161a; translate: 0 -2px; box-shadow: 0 10px 24px rgba(120, 10, 12, 0.35); }
+.btn--line { text-transform: uppercase; letter-spacing: 0.2em; }
+.btn--line:hover { background: #170a0a; color: #f4ead9; translate: 0 -2px; }
+.btn:active { translate: 0 0; }
+.fin__cta :where(.btn, .copy):focus-visible { outline-color: #170a0a; }
+
+.fin__ctaCopy { margin: 12px 0 0; min-height: 32px; display: flex; align-items: center; gap: 12px; }
+.copy {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  font-family: var(--ui);
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5c3a35;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-color: rgba(92, 58, 53, 0.45);
+  cursor: pointer;
+}
+.copy:hover { color: #170a0a; text-decoration-color: currentColor; }
+.copy__status { font-family: var(--ui); font-size: 11.5px; letter-spacing: 0.06em; color: #5c3a35; }
+
+/* The whispering row belongs to frame 1. Frame 2 slides over it and carries
+   its own contact block and copyright, so the row's pale type never lands on
+   the cream. */
+.fin__bar { z-index: 5; }
+.fin__bar a { padding: 8px 0; }
+.fin__ctaLegal {
+  position: absolute;
+  z-index: 2;
+  right: clamp(20px, 3.6vw, 62px);
+  bottom: 16px;
+  font-family: var(--ui);
+  font-size: clamp(8px, 0.66vw, 11px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 234, 217, 0.62);
+}
+
+/* Portrait and narrow frames crop the poster to its red centre, so the block
+   moves to the bottom over a scrim and inverts. */
+@media (max-aspect-ratio: 1/1), (max-width: 760px) {
+  .fin__frame2::before {
+    content: '';
+    position: absolute;
+    inset: 38% 0 0 0;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent, rgba(10, 2, 3, 0.86) 46%, rgba(10, 2, 3, 0.96));
+  }
+  .fin__cta {
+    left: 22px;
+    right: 22px;
+    top: auto;
+    bottom: clamp(92px, 15vh, 130px);
+    width: auto;
+    color: #f4ead9;
+  }
+  .fin__ctaOver, .copy, .copy__status { color: rgba(244, 234, 217, 0.72); }
+  .fin__ctaHead { color: #f4ead9; font-size: clamp(56px, 19vw, 96px); }
+  .fin__ctaHead br { display: none; }
+  .fin__frame2 img { object-position: 82% 42%; }
+  .fin__ctaLegal { left: 22px; right: auto; bottom: 22px; }
+  .fin__ctaSub { color: rgba(244, 234, 217, 0.82); font-size: 14px; }
+  .btn { flex: 1 1 100%; justify-content: center; border-color: rgba(244, 234, 217, 0.7); color: #f4ead9; }
+  .btn--solid { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .btn span { overflow-wrap: anywhere; }
+  .fin__cta :where(.btn, .copy):focus-visible { outline-color: #fff; }
+  .dock__btn { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock, .btn, .hdr__cta, .hdr__link .ic { transition-duration: 0.01ms; }
+}
+
+/* header density: drop the secondary link before anything crowds the nav,
+   and leave phones to the menu, which carries both actions */
+@media (max-width: 1120px) { .hdr__link { display: none; } }
+@media (max-width: 760px) { .hdr__meta { display: none; } }
