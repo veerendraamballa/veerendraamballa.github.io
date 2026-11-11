@@ -7,6 +7,16 @@
 //          selecting nothing and simply leaving the mailto button to do its job
 
 export function initContact() {
+  // Contact email is never in the raw HTML — each element carries it split
+  // across data-u / data-d (no "@"), so regex harvesters find nothing. The
+  // site already requires JS, so assembling it here costs nothing in reach.
+  document.querySelectorAll('[data-u][data-d]').forEach((el) => {
+    const addr = el.dataset.u + '@' + el.dataset.d;
+    if (el.tagName === 'A') el.setAttribute('href', 'mailto:' + addr);
+    if (el.classList.contains('copy')) el.dataset.copy = addr;
+    if (el.hasAttribute('data-show')) el.textContent = addr;
+  });
+
   const dock = document.getElementById('dock');
   const hero = document.querySelector('.hero-spacer');
   const fin = document.getElementById('fin');
