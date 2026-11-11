@@ -533,6 +533,31 @@ html.is-booting .hdr { opacity: 0; }
   }
 }
 
+/* ----------------------------------------------------------------------------
+   Touch targets — give every header control a >=44px hit area (WCAG 2.5.8)
+   via a transparent overlay. It is absolutely positioned, so it changes no
+   layout and nothing visual; width:100% keeps it clear of horizontal
+   neighbours while the height grows into the header's own whitespace.
+   ---------------------------------------------------------------------------- */
+.hdr__mark, .hdr__burger { position: relative; }
+.hdr__mark::after,
+.hdr__nav a::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 44px;
+}
+.hdr__burger::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+}
+
 
 /* universe.css */
 /* ==========================================================================
@@ -1970,3 +1995,17 @@ html { scroll-behavior: smooth; }
    and leave phones to the menu, which carries both actions */
 @media (max-width: 1120px) { .hdr__link { display: none; } }
 @media (max-width: 760px) { .hdr__meta { display: none; } }
+
+/* >=44px touch targets for the finale copy button and footer row, via a
+   transparent overlay (no layout or visual change; vertical only, so the
+   spaced-out row never overlaps horizontally). */
+.copy, .fin__bar a { position: relative; }
+.copy::after,
+.fin__bar a::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 44px;
+}
