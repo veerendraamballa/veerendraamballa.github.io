@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>404 — Veerendra Amballa</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/public/favicon.svg" type="image/svg+xml">
+<style>
+  @font-face { font-family:'Anton'; src:url('/public/fonts/anton-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Oswald'; src:url('/public/fonts/oswald-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+  @font-face { font-family:'Oswald'; src:url('/public/fonts/oswald-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    display:grid; place-content:center; gap:18px; min-height:100svh;
+    padding:40px 24px; text-align:center;
+    background:
+      radial-gradient(60% 50% at 50% 42%, rgba(222,27,28,.22), transparent 70%),
+      radial-gradient(120% 90% at 50% 40%, #120405 0%, #050102 60%, #000 100%);
+    color:#ededed; font-family:'Oswald','Arial Narrow',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .code {
+    font-family:'Anton',Impact,sans-serif; font-weight:400;
+    font-size:clamp(96px,30vw,260px); line-height:.82; letter-spacing:.01em;
+    color:#de1b1c; text-shadow:0 0 .5em rgba(255,42,43,.45);
+  }
+  .lead { font-size:clamp(14px,2.2vw,19px); letter-spacing:.32em; text-transform:uppercase; color:#cfa283; }
+  .sub { font-weight:400; font-size:clamp(12px,1.6vw,15px); letter-spacing:.06em; color:#9a9a9a; max-width:34ch; margin:0 auto; line-height:1.6; }
+  .home {
+    justify-self:center; margin-top:10px; display:inline-flex; align-items:center; gap:.7em;
+    min-height:48px; padding:0 1.6em; border-radius:999px; border:1.5px solid #de1b1c;
+    font-weight:500; font-size:14px; letter-spacing:.2em; text-transform:uppercase; text-decoration:none;
+    color:#ededed; background:rgba(222,27,28,.14); transition:background .25s,box-shadow .25s;
+  }
+  .home:hover { background:#de1b1c; box-shadow:0 0 22px rgba(255,42,43,.45); }
+  .home:focus-visible { outline:2px solid #fff; outline-offset:3px; }
+  svg { width:.95em; height:.95em; }
+</style>
+</head>
+<body>
+  <p class="lead">Page not found</p>
+  <div class="code">404</div>
+  <p class="sub">This page took a wrong turn. The trail starts back at the beginning.</p>
+  <a class="home" href="/">Back to start
+    <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M9 3 3 9M8 9H3V4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</body>
+</html>
