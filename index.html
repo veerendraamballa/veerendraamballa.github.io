@@ -35,12 +35,7 @@
 <link rel="preload" href="public/fonts/anton-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="public/fonts/oswald-500.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="public/fonts/oswald-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="src/styles/app.css">
-<link rel="stylesheet" href="src/styles/universe.css">
-<link rel="stylesheet" href="src/styles/chrono.css">
-<link rel="stylesheet" href="src/styles/projects.css">
-<link rel="stylesheet" href="src/styles/finale.css">
-<link rel="stylesheet" href="src/styles/contact.css">
+<link rel="stylesheet" href="src/styles/app.bundle.css">
 </head>
 <body>
 
@@ -206,7 +201,7 @@
         </li>
       </ul>
       <img class="universe__figure" id="uniFigure" src="public/media/universe-figure.png"
-           alt="Veerendra Amballa" draggable="false" decoding="async">
+           alt="Veerendra Amballa" draggable="false" decoding="async" loading="lazy">
     </div>
 
     <p class="u-cap u-cap--bl" aria-hidden="true">Platform<br>Security<br>Engineer</p>
@@ -255,7 +250,7 @@
       <div class="gallery__world">
         <div class="gallery__deck" id="galleryDeck"></div>
         <img class="gallery__person" id="galleryPerson"
-             src="public/projects/person.png" alt="" draggable="false">
+             src="public/projects/person.png" alt="" draggable="false" decoding="async" loading="lazy">
       </div>
 
       <h2 class="g-label g-label--projects" id="galleryTitle">Projects</h2>

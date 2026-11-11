@@ -1,0 +1,1972 @@
+/* app.css */
+/* ==========================================================================
+   GIREESH — hero
+   The artwork itself (background, wordmark, the three people) is drawn on the
+   WebGL canvas. Everything in this file is the furniture layered over it:
+   header, welcome strip, chips, arrows, dot grids.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Anton';
+  src: url('../../public/fonts/anton-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: block;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../public/fonts/oswald-300.woff2') format('woff2');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../public/fonts/oswald-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../public/fonts/oswald-500.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../public/fonts/oswald-600.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Oswald';
+  src: url('../../public/fonts/oswald-700.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+:root {
+  --ink:      #de1b1c;
+  --ink-hot:  #ff2a2b;
+  --paper:    #ededed;
+  --black:    #000;
+  --dim:      #8a8a8a;
+  --dimmer:   #4e4e4e;
+
+  --ui:  'Oswald', 'Arial Narrow', system-ui, sans-serif;
+  --disp:'Anton', 'Arial Narrow', Impact, sans-serif;
+
+  /* the header height also sets the hero's top breathing room */
+  --hdr-h: clamp(56px, 7.4vh, 82px);
+  --edge:  clamp(14px, 1.55vw, 26px);
+
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in-out: cubic-bezier(.76, 0, .24, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: #000;
+  color: var(--paper);
+  font-family: var(--ui);
+  /* the document scrolls now that more scenes follow the hero; sideways
+     overflow is CLIPPED, not hidden - overflow-x:hidden promotes body to a
+     scroll container, which silently breaks every position:sticky pin in the
+     scenes below (the canvas scrolls away and leaves bare background) */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* nothing may paint before the sequence is ready to start on true black */
+html.is-booting .furniture,
+html.is-booting .hdr { opacity: 0; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.stage-wrap {
+  position: fixed; inset: 0;
+  overflow: hidden;
+  background: #000;
+  z-index: 1;
+}
+
+#stage {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.hdr {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: var(--hdr-h);
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 26px);
+  padding: 0 var(--edge);
+  z-index: 20;
+  pointer-events: none;
+}
+.hdr > * { pointer-events: auto; }
+
+.hdr__rule {
+  position: absolute; left: 0; right: 0; top: 0;
+  width: 100%; height: 100%;
+  color: #6d6d6d;
+  pointer-events: none;
+  overflow: visible;
+}
+.hdr__rule polyline {
+  stroke-dasharray: var(--len, 2000);
+  stroke-dashoffset: var(--len, 2000);
+}
+.is-header .hdr__rule polyline {
+  transition: stroke-dashoffset 1.15s var(--ease-out);
+  stroke-dashoffset: 0;
+}
+
+.hdr__mark {
+  text-decoration: none;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+.mark-word {
+  display: block;
+  font-family: var(--disp);
+  font-size: clamp(20px, 2.05vw, 34px);
+  letter-spacing: .012em;
+  /* the same distressed surface as the big wordmark, so the two agree.
+     NB the red must be a background-color: with background-clip:text the
+     text fill is transparent, so `color` alone paints nothing and the mark
+     comes out as bare grey texture. */
+  background-color: var(--ink);
+  background-image: url('../../public/tex/grunge.png');
+  background-size: 260px;
+  background-blend-mode: multiply;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: saturate(1.35) contrast(1.16) brightness(1.18);
+}
+
+.hdr__div {
+  width: 1px; height: 42%;
+  background: #3a3a3a;
+  flex: 0 0 auto;
+}
+
+.hdr__roles {
+  margin: 0;
+  display: grid;
+  gap: 1px;
+  font-size: clamp(7.5px, .61vw, 9.5px);
+  font-weight: 400;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--dim);
+  line-height: 1.42;
+  flex: 0 0 auto;
+}
+
+.hdr__nav { margin-inline: auto; }
+.hdr__nav ul {
+  display: flex;
+  gap: clamp(16px, 2.4vw, 44px);
+  list-style: none;
+  margin: 0; padding: 0;
+}
+.hdr__nav a {
+  position: relative;
+  display: block;
+  padding: 6px 0;
+  font-size: clamp(9px, .72vw, 11.5px);
+  font-weight: 500;
+  letter-spacing: .26em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--dim);
+  transition: color .38s var(--ease-out);
+}
+.hdr__nav a::after {                       /* the red dot under the active item */
+  content: '';
+  position: absolute;
+  left: 50%; bottom: -3px;
+  width: 4px; height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: scale(0);
+  transition: transform .42s var(--ease-out);
+}
+.hdr__nav a:hover, .hdr__nav a:focus-visible { color: var(--paper); }
+.hdr__nav a.is-active { color: var(--paper); }
+.hdr__nav a.is-active::after,
+.hdr__nav a:hover::after { transform: scale(1); }
+
+.hdr__meta {
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  flex: 0 0 auto;
+}
+.hdr__metaLabel {
+  font-size: clamp(7.5px, .6vw, 9.5px);
+  font-weight: 400;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.hdr__pips { display: flex; gap: 5px; }
+.hdr__pips i {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--ink);
+  opacity: .9;
+}
+
+.hdr__burger { display: none; }
+
+/* staggered arrival ------------------------------------------------------ */
+.hdr__mark, .hdr__div, .hdr__roles, .hdr__nav li, .hdr__meta {
+  opacity: 0;
+  transform: translateY(-9px);
+}
+.is-header .hdr__mark,
+.is-header .hdr__div,
+.is-header .hdr__roles,
+.is-header .hdr__nav li,
+.is-header .hdr__meta {
+  opacity: 1;
+  transform: none;
+  transition: opacity .7s var(--ease-out), transform .8s var(--ease-out);
+}
+.is-header .hdr__mark   { transition-delay: .18s; }
+.is-header .hdr__div    { transition-delay: .26s; }
+.is-header .hdr__roles  { transition-delay: .30s; }
+.is-header .hdr__nav li { transition-delay: calc(.36s + var(--i) * .055s); }
+.is-header .hdr__meta   { transition-delay: .62s; }
+
+/* ==========================================================================
+   Hero furniture
+   ========================================================================== */
+
+.furniture {
+  position: absolute; inset: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+/* --- WELCOME TO MY WORLD: drops in from above ---------------------------
+   Sits ABOVE every other layer except the header, and carries its own soft
+   dark halo, so it stays legible whatever passes behind it — the wordmark,
+   the figure's head, or plain black.                                       */
+.welcome {
+  position: absolute;
+  top: var(--welcome-y, 17.5%);
+  left: 50%;
+  z-index: 4;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: .55em;
+  white-space: nowrap;
+  font-size: var(--welcome-size, 17px);
+  font-weight: 700;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 0 .06em rgba(0, 0, 0, .95),
+    0 0 .55em rgba(0, 0, 0, .92),
+    0 0 1.4em rgba(0, 0, 0, .75);
+  transform: translate(-50%, calc(-140% - 12px));
+  opacity: 0;
+  filter: blur(6px);
+}
+.welcome__dots { letter-spacing: .12em; font-size: .96em; }
+.is-welcome .welcome {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(-50%, -50%);
+  /* fast, confident entrance that overshoots a touch, then settles */
+  transition:
+    transform .82s cubic-bezier(.14, .86, .22, 1.06),
+    opacity .34s ease-out,
+    filter .5s var(--ease-out);
+}
+
+/* --- inverted chips ----------------------------------------------------- */
+.chip {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: .30em .5em .24em;
+  background: var(--paper);
+  color: #060606;
+  font-size: var(--chip-size, 13px);
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+}
+.chip--artist {
+  left: var(--artist-x, 1.5%);
+  top: var(--artist-y, 68.8%);
+  transform: translateX(-118%);
+}
+.chip--legend {
+  left: var(--legend-x, 88.1%);
+  top: var(--legend-y, 26.8%);
+  transform: translateX(118%);
+}
+.is-artist .chip--artist,
+.is-legend .chip--legend {
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform .78s var(--ease-out), opacity .3s linear;
+}
+
+/* --- edge arrows -------------------------------------------------------- */
+.arrows {
+  position: absolute;
+  top: var(--arrow-top, 34.5%);
+  height: var(--arrow-span, 28%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.arrows--l { left: var(--arrow-l, 1.8%); }
+.arrows--r { left: var(--arrow-r, 97.5%); }
+.arrows i {
+  display: block;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: var(--arrow-h, 7px) 0 var(--arrow-h, 7px) var(--arrow-w, 11px);
+  border-color: transparent transparent transparent var(--paper);
+  opacity: 0;
+}
+.arrows--l i { transform: translateX(-26px); }
+.arrows--r i { transform: translateX(26px); }
+.is-arrows .arrows i {
+  opacity: .92;
+  transform: none;
+  transition: transform .62s var(--ease-out), opacity .4s linear;
+  transition-delay: calc(var(--i) * .06s);
+}
+.is-arrows .arrows--r i { transition-delay: calc((4 - var(--i)) * .06s); }
+
+/* --- corner dot grids --------------------------------------------------- */
+.grid-dots {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--dot-gap, 6px);
+}
+.grid-dots--br {
+  left: var(--dots-br-x, 98.4%); top: var(--dots-br-y, 95%);
+  transform: translate(-100%, -100%);
+}
+.grid-dots i {
+  display: block;
+  width: var(--dot-size, 9px);
+  height: var(--dot-size, 9px);
+  border-radius: 50%;
+  background: var(--paper);
+  opacity: 0;
+  transform: scale(.2);
+}
+.is-dots .grid-dots i {
+  opacity: .95;
+  transform: none;
+  transition: transform .5s var(--ease-out), opacity .34s linear;
+  transition-delay: calc(var(--i) * .022s);
+}
+
+/* ==========================================================================
+   Mobile menu — the burger opens a full-bleed sheet in the artwork's voice
+   ========================================================================== */
+
+.menu {
+  position: absolute; inset: 0;
+  z-index: 18;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, .93);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .45s ease, visibility .45s;
+}
+.is-menu .menu { opacity: 1; visibility: visible; }
+.menu ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.menu a {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--disp);
+  font-size: clamp(38px, 11vw, 64px);
+  line-height: 1.06;
+  color: var(--ink);
+  background-color: var(--ink);
+  background-image: url('../../public/tex/grunge.png');
+  background-size: 300px;
+  background-blend-mode: multiply;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: saturate(1.3) contrast(1.12) brightness(1.15);
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .4s ease, transform .55s var(--ease-out);
+}
+.menu a.is-active, .menu a:hover { filter: saturate(1.5) contrast(1.2) brightness(1.4); }
+.is-menu .menu a {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(.06s + var(--i, 0) * .05s);
+}
+.menu__tag {
+  margin: 26px 0 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--dim);
+  opacity: 0;
+  transition: opacity .5s ease .3s;
+}
+.is-menu .menu__tag { opacity: 1; }
+
+/* ==========================================================================
+   Boot / loading — deliberately almost invisible
+   ========================================================================== */
+
+.boot {
+  position: absolute; inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: #000;
+  transition: opacity .5s ease-out, visibility .5s;
+}
+.boot.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.boot__bar {
+  width: min(148px, 26vw);
+  height: 1px;
+  background: rgba(255, 255, 255, .13);
+  overflow: hidden;
+  opacity: 0;
+  animation: bootIn .5s ease-out .35s forwards;   /* only if loading is slow */
+}
+.boot__bar i {
+  display: block; height: 100%; width: 0%;
+  background: var(--paper);
+  transition: width .3s ease-out;
+}
+@keyframes bootIn { to { opacity: 1; } }
+
+.boot__enter {
+  position: absolute;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, .28);
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  padding: 14px 30px 12px;
+  cursor: pointer;
+  transition: background .35s, border-color .35s, letter-spacing .35s;
+}
+.boot__enter:hover { background: var(--ink); border-color: var(--ink); letter-spacing: .4em; }
+
+.fallback {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; text-align: center; gap: 12px;
+}
+.fallback p {
+  font-family: var(--disp); font-size: 16vw; color: var(--ink); margin: 0;
+}
+.fallback small { color: var(--dim); letter-spacing: .2em; text-transform: uppercase; }
+
+/* ==========================================================================
+   Small screens — the composition is landscape by nature, so on a phone the
+   furniture thins out rather than piling up on top of the wordmark.
+   ========================================================================== */
+
+@media (max-width: 760px) {
+  .hdr { gap: 10px; }
+  .hdr__div, .hdr__roles, .hdr__meta { display: none; }
+  .hdr__nav { display: none; }
+  .hdr__burger {
+    display: grid;
+    gap: 5px;
+    margin-left: auto;
+    appearance: none; border: 0; background: none; padding: 6px 0;
+    cursor: pointer;
+  }
+  .hdr__burger span {
+    display: block; width: 26px; height: 1.5px; background: var(--paper);
+    transition: transform .4s var(--ease-out);
+  }
+  .hdr__burger[aria-expanded="true"] span:first-child { transform: translateY(3.25px) rotate(45deg); }
+  .hdr__burger[aria-expanded="true"] span:last-child  { transform: translateY(-3.25px) rotate(-45deg); }
+
+  .arrows { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome, .chip, .arrows i, .grid-dots i,
+  .hdr__mark, .hdr__div, .hdr__roles, .hdr__nav li, .hdr__meta {
+    transition-duration: .01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+
+/* universe.css */
+/* ==========================================================================
+   Scene two — the engineering universe.
+   A dark room, a red core burning behind the figure, and twelve glass cards
+   holding the stack. Everything is live DOM + SVG: the cards rise together
+   as one event, then float; the pointer leans the room by depth; red lines
+   run from the core out to each card.
+   Card geometry comes from custom properties set inline per card:
+     --x / --y  centre, as fractions of the section
+     --w        width, as a fraction of the section width
+     --d        depth 0..1 (near cards move more and sit brighter)
+   ========================================================================== */
+
+.flow {
+  position: relative;
+  z-index: 2;
+}
+
+html { scroll-behavior: smooth; }
+
+/* The hero is position:fixed, so its scroll height has to be reserved here or
+   the universe would start at the top of the document and sit on top of it. */
+.hero-spacer {
+  height: 100svh;
+  pointer-events: none;
+}
+
+.universe {
+  --px: 0;                 /* pointer, -1..1, written by boot2 */
+  --py: 0;
+  position: relative;
+  height: 100svh;
+  min-height: 520px;
+  background: #000;
+  overflow: hidden;
+  box-shadow: 0 -1px 0 0 #000;
+  container-type: size;
+}
+
+/* ---- the room ------------------------------------------------------------ */
+.universe__room { position: absolute; inset: 0; }
+
+.universe__glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(38% 46% at 50% 54%, rgba(222, 27, 28, 0.34), transparent 70%),
+    radial-gradient(70% 34% at 50% 96%, rgba(150, 12, 14, 0.30), transparent 72%),
+    radial-gradient(120% 90% at 50% 40%, #120405 0%, #050102 60%, #000 100%);
+  opacity: 0;
+  transition: opacity 2.2s var(--ease-out);
+}
+.universe.is-on .universe__glow { opacity: 1; }
+
+.universe__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(62cqh, 46cqw);
+  aspect-ratio: 1;
+  translate: calc(-50% + var(--px) * -6px) calc(-50% + var(--py) * -4px);
+  opacity: 0;
+  scale: 0.86;
+  transition: opacity 1.8s var(--ease-out) 0.2s, scale 2.4s var(--ease-out) 0.2s;
+  overflow: visible;
+}
+.universe.is-on .universe__core { opacity: 1; scale: 1; }
+.universe__core circle {
+  fill: none;
+  stroke: var(--ink);
+  vector-effect: non-scaling-stroke;
+  transform-origin: 0 0;
+}
+.universe__core .c1 { stroke-width: 1; stroke-dasharray: 2 5; opacity: 0.55; animation: uSpin 90s linear infinite; }
+.universe__core .c2 { stroke-width: 1.5; stroke-dasharray: 120 40 14 40; opacity: 0.85; animation: uSpin 46s linear infinite reverse; filter: drop-shadow(0 0 6px rgba(255, 42, 43, 0.8)); }
+.universe__core .c3 { stroke-width: 1; stroke-dasharray: 60 22; opacity: 0.5; animation: uSpin 30s linear infinite; }
+.universe__core .c4 { stroke-width: 2; stroke-dasharray: 30 90; opacity: 0.9; animation: uSpin 18s linear infinite reverse; filter: drop-shadow(0 0 8px rgba(255, 42, 43, 0.9)); }
+@keyframes uSpin { to { rotate: 360deg; } }
+
+.universe__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.universe__lines path {
+  fill: none;
+  stroke: var(--ink-hot);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s var(--ease-out) calc(0.9s + var(--i) * 0.03s),
+              opacity 0.6s ease 0.9s;
+}
+.universe.is-on .universe__lines path { opacity: 0.34; stroke-dashoffset: 0; }
+.universe__lines circle {
+  fill: #ffd9c8;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px #ff2a2b);
+}
+.universe.is-live .universe__lines circle { opacity: 0.9; }
+
+.universe__floor {
+  position: absolute;
+  left: 50%;
+  top: 88%;
+  width: min(74cqw, 120cqh);
+  aspect-ratio: 5 / 1;
+  translate: -50% -50%;
+}
+.universe__floor i {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 90, 60, 0.42);
+  border-radius: 50%;
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity 1.4s ease 0.5s, scale 2s var(--ease-out) 0.5s;
+  box-shadow: 0 0 22px rgba(222, 27, 28, 0.25), inset 0 0 26px rgba(222, 27, 28, 0.16);
+}
+.universe__floor i:nth-child(2) { inset: 17% 15%; border-color: rgba(255, 120, 80, 0.30); }
+.universe__floor i:nth-child(3) { inset: 34% 30%; border-color: rgba(255, 200, 170, 0.34); }
+.universe.is-on .universe__floor i { opacity: 1; scale: 1; }
+
+/* ---- title --------------------------------------------------------------- */
+.universe__title {
+  position: absolute;
+  top: clamp(26px, 6.5vh, 66px);
+  left: 50%;
+  transform: translate(-50%, 14px);
+  z-index: 6;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.3s var(--ease-out) 0.75s,
+              transform 1.6s var(--ease-out) 0.75s;
+}
+.universe.is-on .universe__title { opacity: 1; transform: translate(-50%, 0); }
+
+.universe__over {
+  margin: 0 0 0.9em;
+  font-family: var(--ui);
+  font-size: clamp(7.5px, 0.62vw, 9.5px);
+  font-weight: 500;
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  text-transform: uppercase;
+  color: #cfa283;
+}
+.universe__name {
+  margin: 0;
+  font-family: 'Bodoni Moda', 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(20px, 2.3vw, 36px);
+  line-height: 1.22;
+  letter-spacing: 0.26em;
+  text-indent: 0.26em;
+  text-transform: uppercase;
+  color: #f2e8dc;
+  text-shadow: 0 0 0.6em rgba(0, 0, 0, 0.9), 0 0 2em rgba(0, 0, 0, 0.7);
+}
+.universe__sub {
+  margin: 1.1em 0 0;
+  font-family: var(--ui);
+  font-size: clamp(7.5px, 0.6vw, 9.5px);
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  text-transform: uppercase;
+  color: rgba(226, 208, 192, 0.78);
+}
+
+/* ---- the cards ----------------------------------------------------------- */
+.universe__world { position: absolute; inset: 0; }
+.universe__deck {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.u-card {
+  --cw: calc(var(--w) * 100cqw);
+  position: absolute;
+  left: calc(var(--x) * 100%);
+  top: calc(var(--y) * 100%);
+  width: var(--cw);
+  aspect-ratio: 1.22;
+  z-index: calc(10 + var(--d) * 10);
+  /* the pointer leans the room: near cards travel furthest */
+  translate:
+    calc(-50% + var(--px) * var(--d) * -26px)
+    calc(-50% + var(--py) * var(--d) * -16px);
+  opacity: 0;
+  transform: translateY(9cqh) scale(0.94);
+  /* one coordinated rise: every card shares the same clock */
+  transition: opacity 1.1s var(--ease-out) 0.55s, transform 1.7s var(--ease-out) 0.55s;
+}
+.universe.is-on .u-card { opacity: 1; transform: none; }
+
+.u-card__in {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 9% 10% 9%;
+  border-radius: calc(var(--cw) * 0.06);
+  border: 1px solid rgba(255, 220, 205, calc(0.16 + var(--d) * 0.26));
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.07), transparent 38%),
+    linear-gradient(180deg, rgba(34, 9, 10, 0.86), rgba(8, 3, 4, 0.92));
+  box-shadow:
+    0 0 calc(10px + var(--d) * 26px) rgba(222, 27, 28, calc(0.10 + var(--d) * 0.22)),
+    inset 0 0 calc(var(--cw) * 0.12) rgba(222, 27, 28, 0.10);
+  backdrop-filter: blur(3px);
+  filter: brightness(calc(0.66 + var(--d) * 0.42));
+  rotate: calc((0.5 - var(--x)) * 9deg);
+  animation: uFloat calc(6.2s + var(--i) * 0.47s) ease-in-out
+             calc(var(--i) * -1.31s) infinite alternate paused;
+  transition: filter 0.45s ease, scale 0.5s var(--ease-out), border-color 0.45s ease;
+}
+.universe.is-live .u-card__in { animation-play-state: running; }
+@keyframes uFloat {
+  from { translate: 0 0; }
+  to   { translate: 0 calc(-5px - var(--d) * 7px); }
+}
+.u-card:hover { z-index: 40; }
+.u-card:hover .u-card__in {
+  filter: brightness(1.25);
+  scale: 1.06;
+  border-color: rgba(255, 190, 170, 0.9);
+}
+
+.u-card b {
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: calc(var(--cw) * 0.27);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  text-shadow: 0 0 calc(var(--cw) * 0.12) rgba(255, 42, 43, 0.55);
+}
+.u-card strong {
+  margin-top: auto;
+  font-family: var(--ui);
+  font-weight: 500;
+  font-size: max(7px, calc(var(--cw) * 0.088));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f2e8dc;
+  line-height: 1.25;
+}
+.u-card em {
+  margin-top: 0.35em;
+  font-family: var(--ui);
+  font-style: normal;
+  font-weight: 300;
+  font-size: max(6px, calc(var(--cw) * 0.066));
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(226, 208, 192, 0.8);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- the figure ---------------------------------------------------------- */
+.universe__figure {
+  position: absolute;
+  left: 50%;
+  bottom: 9.5%;
+  height: 47%;
+  width: auto;
+  z-index: 16;
+  translate: calc(-50% + var(--px) * -9px) calc(var(--py) * -5px);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 1.6s var(--ease-out) 0.35s, transform 2s var(--ease-out) 0.35s;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 26px rgba(222, 27, 28, 0.35));
+}
+.universe.is-on .universe__figure { opacity: 1; transform: none; }
+
+/* ---- corner captions + grain --------------------------------------------- */
+.u-cap {
+  position: absolute;
+  z-index: 6;
+  margin: 0;
+  font-family: var(--ui);
+  font-size: clamp(7.5px, 0.62vw, 9.5px);
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  line-height: 2.1;
+  text-transform: uppercase;
+  color: rgba(226, 208, 192, 0.8);
+  opacity: 0;
+  transition: opacity 1.2s ease 1.5s;
+}
+.universe.is-on .u-cap { opacity: 1; }
+.u-cap--bl { left: var(--edge); bottom: clamp(18px, 5vh, 46px); padding-left: 12px; border-left: 1px solid var(--ink); }
+.u-cap--br { right: var(--edge); bottom: clamp(18px, 5vh, 46px); text-align: right; }
+
+.universe__grain {
+  position: absolute;
+  inset: -64px;
+  z-index: 50;
+  background: url('../../public/tex/grain.png') 0 0 / 256px 256px;
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+  pointer-events: none;
+  animation: uGrain 0.9s steps(4) infinite paused;
+}
+.universe.is-live .universe__grain { animation-play-state: running; }
+@keyframes uGrain { to { translate: 64px 32px; } }
+
+/* ---- portrait: the room restacks instead of shrinking --------------------- */
+@media (max-aspect-ratio: 1/1) {
+  .universe__core { top: 74%; width: 74cqw; }
+  .universe__floor { top: 93%; width: 120cqw; }
+  .universe__lines { display: none; }
+  .universe__deck {
+    inset: auto 0 auto 0;
+    top: 19%;
+    height: 46%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.2cqw;
+    padding: 0 4cqw;
+    align-content: center;
+  }
+  .u-card {
+    --cw: 28.5cqw;
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    aspect-ratio: 1.55;
+    translate: none;
+  }
+  .u-card__in { rotate: none; filter: brightness(calc(0.82 + var(--d) * 0.26)); }
+  .u-card b { font-size: calc(var(--cw) * 0.19); }
+  .universe__figure { height: 33%; bottom: 4.5%; }
+  .u-cap { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .universe *, .universe__figure { animation: none !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+}
+
+
+/* chrono.css */
+/* ==========================================================================
+   Scene three — the time machine.
+   The room, floor mechanism, clock and timeline rail are drawn on a WebGL
+   canvas. The six year cards are DOM: each carries real text that has to stay
+   crisp and reachable, and they are positioned by JS from the same fitted
+   geometry the canvas draws with, so the layers cannot drift apart.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Bodoni Moda';
+  src: url('../../public/fonts/bodonimoda-400.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+.chrono {
+  --amber: #ffa03c;
+  --ember: #ff3c14;
+  --cream: #f4e9dc;
+
+  position: relative;
+  height: 240svh;              /* travel for the intro to breathe into */
+  background: #060505;
+}
+
+.chrono__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+#chronoStage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The figure's own canvas, stacked OVER the card deck: he stands in front of
+   the timeline with the cards passing behind his shoulders. Transparent, and
+   inert to the pointer so the cards underneath stay hoverable and clickable. */
+#chronoFront {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* --------------------------------------------------------------------------
+   Editorial furniture
+   -------------------------------------------------------------------------- */
+
+.chrono__title,
+.chrono__rail,
+.chrono__hint,
+.chrono__note {
+  position: absolute;
+  margin: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.1s var(--ease-out), transform 1.2s var(--ease-out);
+}
+.chrono.is-live .chrono__title,
+.chrono.is-live .chrono__rail,
+.chrono.is-live .chrono__hint,
+.chrono.is-live .chrono__note { opacity: 1; transform: none; }
+.chrono.is-live .chrono__rail { transition-delay: .15s; }
+.chrono.is-live .chrono__hint { transition-delay: .25s; }
+.chrono.is-live .chrono__note { transition-delay: .3s; }
+
+.chrono__title {
+  left: clamp(18px, 3vw, 54px);
+  top: clamp(26px, 5.5vh, 62px);
+  display: grid;
+  gap: .18em;
+  font-family: 'Bodoni Moda', 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(15px, 1.75vw, 27px);
+  line-height: 1;
+  letter-spacing: .30em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+
+.chrono__rail {
+  left: clamp(18px, 3vw, 54px);
+  top: clamp(150px, 24vh, 240px);
+  display: grid;
+  gap: .95em;
+  font-family: var(--ui);
+  font-size: clamp(7.5px, .62vw, 9.5px);
+  font-weight: 400;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: #7b6f66;
+  line-height: 1;
+}
+.chrono__rail i,
+.chrono__hint i,
+.chrono__note i {
+  display: block;
+  width: 26px;
+  height: 1px;
+  background: #6a5a4c;
+  margin: .5em 0;
+}
+
+.chrono__hint {
+  right: clamp(18px, 3vw, 54px);
+  top: clamp(26px, 5.5vh, 62px);
+  text-align: right;
+  font-family: var(--ui);
+  font-size: clamp(7.5px, .62vw, 9.5px);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--amber);
+  line-height: 2;
+}
+.chrono__hint i { margin-left: auto; }
+
+.chrono__note {
+  font-family: var(--ui);
+  font-size: clamp(7.5px, .6vw, 9.5px);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: #9a6a44;
+  line-height: 2.1;
+}
+.chrono__note--bl { left: clamp(18px, 3vw, 54px); bottom: clamp(20px, 5vh, 56px); }
+.chrono__note--br {
+  right: clamp(18px, 3vw, 54px);
+  bottom: clamp(20px, 5vh, 56px);
+  text-align: right;
+}
+.chrono__note--br i { margin-left: auto; }
+
+/* --------------------------------------------------------------------------
+   The deck of years
+   -------------------------------------------------------------------------- */
+
+.chrono__deck {
+  position: absolute;
+  inset: 0;
+  perspective: 1400px;
+  pointer-events: none;
+}
+
+/* The big year numeral on the rail. Styled as the reference sets them: bold
+   condensed warm-cream figures with a CONTROLLED glow — generous blur radii
+   read as a white pill from a distance, which is exactly what must not
+   happen. No background, no box; it is lettering standing in the room. */
+.yr-tag {
+  position: absolute;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: default;
+  transform: translate(-16%, -128%) scale(calc(.88 + .12 * var(--near, 0)));
+  transform-origin: 0 100%;
+  font-family: var(--ui);
+  font-weight: 600;
+  letter-spacing: .035em;
+  line-height: 1;
+  color: color-mix(in srgb, #eccfa4 calc(58% + 42% * var(--near, 0)), #c99055);
+  opacity: calc(var(--in, 0) * (.72 + .28 * var(--near, 0)));
+  text-shadow:
+    0 0 5px rgba(255, 150, 60, calc(.22 + .18 * var(--near, 0))),
+    0 0 16px rgba(255, 70, 20, calc(.12 + .26 * var(--near, 0)));
+  transition: color .5s ease, text-shadow .5s ease;
+  will-change: transform, opacity;
+}
+.yr-tag.is-active {
+  color: #fff4e4;
+  text-shadow:
+    0 0 5px rgba(255, 170, 90, .45),
+    0 0 18px rgba(255, 70, 20, .5),
+    0 0 42px rgba(255, 40, 10, .3);
+}
+
+.yr {
+  position: absolute;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+
+  /* The card hangs BELOW its node on the rail, leans with the rail's tangent,
+     and lifts toward the viewer as it becomes the active year. Combining that
+     into one transform keeps it on the compositor. */
+  /* the measured point is the centre of the card's PHOTO, which sits about
+     30% down the finished card, so that is what is anchored */
+  transform:
+    translate(-50%, -30%)
+    translateZ(calc(var(--near, 0) * 46px))
+    translateY(calc((1 - var(--in, 0)) * 26px))
+    rotate(var(--tilt, 0deg))
+    scale(calc(.94 + .06 * var(--near, 0)));
+  opacity: var(--in, 0);
+  will-change: transform, opacity;
+  transition: filter .45s ease;
+}
+
+.yr__frame {
+  position: relative;
+  display: block;
+  padding: 7px;
+  border-radius: 10px;
+  background:
+    linear-gradient(160deg, rgba(38, 26, 20, .92), rgba(14, 10, 9, .96));
+  border: 1px solid rgba(255, 150, 80, calc(.14 + .5 * var(--near, 0)));
+  box-shadow:
+    0 18px 46px -18px rgba(0, 0, 0, .9),
+    0 0 calc(6px + 46px * var(--near, 0))
+      rgba(255, 62, 20, calc(.05 + .40 * var(--near, 0))),
+    inset 0 1px 0 rgba(255, 190, 140, .07);
+  transition: border-color .45s ease, box-shadow .45s ease, background .45s ease;
+}
+.yr.is-active .yr__frame {
+  border-color: rgba(255, 92, 44, .95);
+  background: linear-gradient(160deg, rgba(48, 26, 18, .95), rgba(18, 10, 8, .97));
+}
+
+.yr__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 6px;
+  /* the far years read as older: cooler, flatter, further back in memory */
+  filter:
+    saturate(calc(.55 + .55 * var(--near, 0)))
+    brightness(calc(.62 + .48 * var(--near, 0)))
+    contrast(1.05);
+  transition: filter .5s ease;
+}
+
+.yr__body {
+  display: block;
+  padding: 9px 4px 3px;
+}
+.yr__year {
+  display: block;
+  font-family: var(--ui);
+  font-weight: 300;
+  font-size: clamp(13px, 1.15vw, 19px);
+  letter-spacing: .04em;
+  line-height: 1;
+  color: color-mix(in srgb, #d9cfc6 calc(100% - 60% * var(--near, 0)), #fff3e8);
+}
+.yr__key {
+  display: block;
+  margin-top: .5em;
+  font-family: var(--ui);
+  font-weight: 600;
+  font-size: clamp(7.5px, .62vw, 9.5px);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #a89a90 calc(100% - 75% * var(--near, 0)), #ffb488);
+}
+.yr__lines {
+  display: grid;
+  gap: .18em;
+  margin-top: .5em;
+}
+.yr__lines i {
+  font-style: normal;
+  font-family: var(--ui);
+  font-size: clamp(7px, .56vw, 8.6px);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #8d8078;
+  transition: color .5s ease;
+}
+.yr.is-active .yr__lines i { color: #c9bab0; }
+
+.yr__go {
+  position: absolute;
+  right: 12px;
+  bottom: 11px;
+  width: 15px;
+  height: 15px;
+  color: #ffd9c2;
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: opacity .4s ease, transform .5s var(--ease-out);
+}
+.yr.is-active .yr__go { opacity: .95; transform: none; }
+
+.yr:focus-visible .yr__frame { outline: 2px solid var(--amber); outline-offset: 3px; }
+
+/* --------------------------------------------------------------------------
+   Portrait — the timeline becomes a vertical descent rather than a squeezed arc
+   -------------------------------------------------------------------------- */
+
+/* On a phone the deck holds ONE card at a time: six stacked cards in a tall
+   frame would be a pile, so the vertical year rail becomes the control and the
+   active card holds the stage beside it. */
+.chrono.is-portrait .chrono__deck { perspective: none; }
+.chrono.is-portrait .yr {
+  transform:
+    translate(-50%, -50%)
+    translateY(calc((1 - var(--near, 0)) * 22px))
+    scale(calc(.94 + .06 * var(--near, 0)));
+  /* only the active card is visible and hittable */
+  opacity: calc(var(--in, 0) * max(0, var(--near, 0) * 3 - 2));
+  pointer-events: none;
+  transition: opacity .45s ease, transform .55s var(--ease-out);
+}
+.chrono.is-portrait .yr.is-active { pointer-events: auto; }
+.chrono.is-portrait .yr__lines { display: grid; }
+
+/* the year numerals become the tap targets */
+.chrono.is-portrait .yr-tag {
+  transform: translate(-50%, -50%) scale(calc(.9 + .18 * var(--near, 0)));
+  padding: 10px 14px;
+  margin: -10px -14px;
+  pointer-events: auto;
+  cursor: pointer;
+  opacity: calc(var(--in, 0) * (.42 + .58 * var(--near, 0)));
+}
+.chrono.is-portrait .chrono__hint { top: auto; bottom: clamp(18px, 4vh, 44px); }
+
+@media (max-width: 760px) {
+  .chrono { height: 200svh; }
+  .chrono__rail { display: none; }
+  .chrono__note--bl { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chrono__title, .chrono__rail, .chrono__hint, .chrono__note,
+  .yr, .yr__frame, .yr__img { transition-duration: .01ms !important; }
+}
+
+
+/* projects.css */
+/* ==========================================================================
+   Scene four — the project universe.
+   The reference image is rebuilt as living layers: the room is the extracted
+   plate on canvas, the twelve screens are DOM buttons wearing sprites cut
+   from that same image, the creator is its matted centre. This sheet carries
+   the layer stack, the hover life and the caption typography; the entrance
+   choreography itself is driven per-frame from boot4.js.
+   ========================================================================== */
+
+.gallery {
+  position: relative;
+  height: 260svh;
+  background: #000;
+}
+
+.gallery__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #000;
+}
+
+#galleryStage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* the 3D room the cards live in */
+.gallery__world {
+  position: absolute;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 42%;
+}
+
+.gallery__deck {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+   Cards. The sprite carries the reference's own bezel, rim light and glow,
+   so the button is chrome-free: no border, no background — just the pixels,
+   an easing inner shell for hover/float, and a tinted shadow when lifted.
+   -------------------------------------------------------------------------- */
+
+.g-card {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.g-card__in {
+  display: block;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.5s ease;
+  animation: gFloat calc(5.6s + var(--i, 0) * 0.63s) ease-in-out
+             calc(var(--i, 0) * -1.27s) infinite alternate paused;
+}
+.gallery.is-live .g-card__in { animation-play-state: running; }
+
+.g-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* hover: toward the camera, a touch brighter, its glow deepened — and the
+   rest of the room eases back a breath so the depth reads */
+.g-card:hover .g-card__in,
+.g-card:focus-visible .g-card__in {
+  transform: translateZ(30px) scale(1.022);
+  filter: brightness(1.12) drop-shadow(0 10px 34px var(--tint, rgba(255, 140, 60, 0.4)));
+}
+.g-card:focus-visible {
+  outline: none;
+}
+.gallery__deck.is-hot .g-card:not(:hover):not(:focus-visible) .g-card__in {
+  transform: translateZ(-12px) scale(0.992);
+  filter: brightness(0.9);
+}
+
+@keyframes gFloat {
+  from { translate: 0 0; rotate: 0.001deg; }
+  to { translate: 0 -7px; rotate: -0.35deg; }
+}
+
+.gallery__person {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+}
+
+/* --------------------------------------------------------------------------
+   Corner captions — the reference's HUD. Letterspaced hairline sans, amber
+   headline, dashes as punctuation. They type themselves in on .is-labels.
+   -------------------------------------------------------------------------- */
+
+.g-label {
+  position: absolute;
+  margin: 0;
+  font-family: var(--ui);
+  font-size: clamp(8px, 0.72vw, 12px);
+  font-weight: 400;
+  line-height: 2.05;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(212, 208, 205, 0.6);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.9s ease calc(var(--li, 0) * 0.14s),
+              transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--li, 0) * 0.14s);
+  pointer-events: none;
+}
+.gallery.is-labels .g-label { opacity: 1; transform: none; }
+
+.g-label--projects {
+  top: clamp(18px, 3.8vh, 40px);
+  left: clamp(20px, 3vw, 52px);
+  font-size: clamp(10px, 0.92vw, 15px);
+  font-weight: 500;
+  letter-spacing: 0.52em;
+  color: #d8b183;
+}
+.g-label--projects::after,
+.g-label--ideas::after,
+.g-label--scroll::after,
+.g-label--tomorrow::after {
+  content: '';
+  display: block;
+  width: 1.6em;
+  height: 1px;
+  margin-top: 1.1em;
+  background: currentColor;
+  opacity: 0.55;
+}
+.g-label--ideas {
+  top: clamp(90px, 15.5vh, 150px);
+  left: clamp(20px, 3vw, 52px);
+}
+.g-label--ideas b { font-weight: 500; color: rgba(232, 226, 220, 0.82); }
+.g-label--scroll {
+  top: clamp(18px, 4vh, 42px);
+  right: clamp(20px, 3vw, 52px);
+}
+.g-label--real {
+  bottom: clamp(20px, 6vh, 60px);
+  left: clamp(20px, 3vw, 52px);
+}
+.g-label--tomorrow {
+  bottom: clamp(20px, 6vh, 60px);
+  right: clamp(20px, 3vw, 52px);
+}
+
+/* the red index over the hero screen — placed by boot4 from frame coords */
+.g-label--num {
+  font-family: var(--ui);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #c8382b;
+  transition-delay: 0.5s;
+}
+
+/* --------------------------------------------------------------------------
+   Portrait: recomposition (layout4.PORTRAIT places the survivors); the rest
+   of the deck sits this orientation out. Captions tighten into two rows.
+   -------------------------------------------------------------------------- */
+
+.gallery.is-portrait .g-label--ideas { top: clamp(64px, 9vh, 110px); }
+.gallery.is-portrait .g-label--real,
+.gallery.is-portrait .g-label--tomorrow { bottom: clamp(14px, 3vh, 30px); }
+.gallery.is-portrait .g-label--num { display: none; }
+
+/* --------------------------------------------------------------------------
+   Fallbacks
+   -------------------------------------------------------------------------- */
+
+.gallery.is-fallback #galleryStage { display: none; }
+.gallery.is-fallback .gallery__pin {
+  background: #000 url('../../public/projects/plate.jpg') center / cover no-repeat;
+}
+.gallery.is-set .g-card,
+.gallery.is-set .gallery__person { opacity: 1; }
+.gallery.is-set .g-label { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .g-card__in { animation: none; }
+  .g-label { transition-duration: 0.01ms; transition-delay: 0s; }
+}
+
+
+/* finale.css */
+/* ==========================================================================
+   The finale — the closing shot.
+   Deep black + dark red + crimson + cream. The furnace canvas sits behind a
+   giant GIREESH set in real type (Anton, stretched to the reference's
+   ultra-tall poster proportions, wearing the extracted grunge), the man's
+   canvas rides in front of the title, and the editorial captions + the quiet
+   functional row hold the edges.
+   ========================================================================== */
+
+/* Two frames of one closing scene: the pinned stage holds frame 1 (the
+   GIREESH composition) while the extra scroll room drives frame 2 sliding in
+   from the left over it. */
+.fin {
+  position: relative;
+  height: 240svh;
+  background: #000;
+}
+
+.fin__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #000;
+}
+
+.fin__stage1 {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+#finBack,
+#finMan {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#finBack { z-index: 1; }
+#finMan { z-index: 3; pointer-events: none; }
+
+/* dims frame 1 as frame 2 advances over it */
+.fin__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Frame 2 — the supplied still, full-bleed, entering from the LEFT under
+   scroll control (boot6 writes its transform). Its leading edge throws a
+   soft shadow onto frame 1, and a grain veil keeps it in the film's stock.
+   -------------------------------------------------------------------------- */
+.fin__frame2 {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  margin: 0;
+  transform: translate3d(-104%, 0, 0);
+  will-change: transform, filter;
+  pointer-events: none;
+  box-shadow: 42px 0 110px rgba(0, 0, 0, 0.62);
+  background: #0a0203;
+}
+.fin__frame2 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  display: block;
+  user-select: none;
+}
+.fin__frame2::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('../../public/tex/grain.png') repeat;
+  background-size: 340px;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Editorial captions — cream letterspaced, red punctuation.
+   -------------------------------------------------------------------------- */
+
+.f-cap {
+  position: absolute;
+  margin: 0;
+  z-index: 4;
+  font-family: var(--ui);
+  font-size: clamp(8px, 0.72vw, 12px);
+  font-weight: 400;
+  line-height: 2.1;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: rgba(233, 220, 208, 0.72);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1s ease calc(var(--li, 0) * 0.15s),
+              transform 1.2s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--li, 0) * 0.15s);
+  pointer-events: none;
+}
+.fin.is-caps .f-cap { opacity: 1; transform: none; }
+
+.f-cap--tl {
+  top: clamp(22px, 6vh, 58px);
+  left: clamp(24px, 3.6vw, 62px);
+  padding-left: 1.2em;
+  border-left: 2px solid #b3271d;
+}
+.f-cap--quote {
+  top: 38%;
+  left: clamp(24px, 3.2vw, 56px);
+  font-size: clamp(10px, 0.92vw, 15px);
+  letter-spacing: 0.34em;
+  color: rgba(240, 230, 220, 0.88);
+}
+.f-cap--quote::after {
+  content: '';
+  display: block;
+  width: 2.1em;
+  height: 2px;
+  margin-top: 1.5em;
+  background: #b3271d;
+}
+.f-cap--blw {
+  bottom: clamp(64px, 11vh, 110px);
+  left: clamp(24px, 3.6vw, 62px);
+  padding-left: 1.2em;
+  border-left: 2px solid #b3271d;
+}
+.f-cap--tr {
+  top: clamp(22px, 6vh, 58px);
+  right: clamp(24px, 3.6vw, 62px);
+}
+.f-cap--tr::after,
+.f-cap--br::after {
+  content: '';
+  display: block;
+  width: 1.8em;
+  height: 2px;
+  margin-top: 1.2em;
+  background: #b3271d;
+}
+.f-cap--br {
+  bottom: clamp(64px, 11vh, 110px);
+  right: clamp(24px, 3.6vw, 62px);
+}
+
+/* --------------------------------------------------------------------------
+   The functional row — a real footer, whispering. Sits on the bottom edge
+   without breaking the frame.
+   -------------------------------------------------------------------------- */
+
+.fin__bar {
+  position: absolute;
+  z-index: 7;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px clamp(20px, 3.6vw, 62px) 16px;
+  font-family: var(--ui);
+  font-size: clamp(8px, 0.66vw, 11px);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(216, 186, 174, 0.5);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 1s ease, transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fin.is-bar .fin__bar { opacity: 1; transform: none; }
+
+.fin__bar a {
+  color: rgba(233, 220, 208, 0.7);
+  text-decoration: none;
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+}
+.fin__bar a:hover,
+.fin__bar a:focus-visible {
+  color: #f4ecdd;
+  text-shadow: 0 0 14px rgba(220, 60, 40, 0.55);
+  outline: none;
+}
+.fin__soc {
+  display: flex;
+  gap: 2.4em;
+}
+.fin__c { font-size: inherit; letter-spacing: 0.24em; }
+
+/* --------------------------------------------------------------------------
+   Portrait + fallbacks
+   -------------------------------------------------------------------------- */
+
+.fin.is-portrait .f-cap--tr,
+.fin.is-portrait .f-cap--tl,
+.fin.is-portrait .f-cap--blw { display: none; }
+.fin.is-portrait .f-cap--quote { top: auto; bottom: 24vh; }
+.fin.is-portrait .fin__bar {
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 20px;
+}
+
+.fin.is-fallback #finBack,
+.fin.is-fallback #finMan { display: none; }
+.fin.is-fallback {
+  background: #000 url('../../public/fin/plate.jpg') center / cover no-repeat;
+}
+.fin.is-set .f-cap,
+.fin.is-set .fin__bar { opacity: 1; transform: none; filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .f-cap, .fin__bar { transition-duration: 0.01ms; transition-delay: 0s; }
+}
+
+
+/* contact.css */
+/* ==========================================================================
+   Contact — three places, one visual language.
+     header    a quiet LinkedIn link and a "Get in touch" pill, on screen one
+     dock      a fixed pair that follows the scroll between hero and finale
+     finale    the full contact block on the closing poster
+   Rules held throughout: targets are at least 40px tall (44px on touch),
+   focus is always visible, and the primary action is the only filled shape.
+   ========================================================================== */
+
+.ic {
+  width: 0.95em;
+  height: 0.95em;
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
+:where(.hdr__link, .hdr__cta, .dock__btn, .btn, .copy, .menu__c):focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ---- header --------------------------------------------------------------- */
+.hdr__meta {
+  display: flex;
+  align-items: center;
+  justify-items: initial;
+  gap: clamp(10px, 1.3vw, 22px);
+}
+.hdr__link,
+.hdr__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  font-family: var(--ui);
+  font-size: clamp(9px, 0.72vw, 11.5px);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.hdr__link {
+  padding: 10px 0;
+  color: var(--dim);
+  transition: color 0.3s var(--ease-out);
+}
+.hdr__link:hover { color: var(--paper); }
+.hdr__link .ic { transition: translate 0.3s var(--ease-out); }
+.hdr__link:hover .ic { translate: 2px -2px; }
+
+.hdr__cta {
+  min-height: 34px;
+  padding: 0 1.5em 0 1.76em;       /* optical: tracking adds space on the right */
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  color: var(--paper);
+  background: rgba(222, 27, 28, 0.14);
+  transition: background 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+.hdr__cta:hover {
+  background: var(--ink);
+  box-shadow: 0 0 22px rgba(255, 42, 43, 0.45);
+}
+.hdr__cta:active { background: #b81516; }
+
+/* ---- mobile menu ---------------------------------------------------------- */
+.menu__contact {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0 0;
+  opacity: 0;
+  transition: opacity 0.5s ease 0.34s;
+}
+.is-menu .menu__contact { opacity: 1; }
+.menu a.menu__c {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  min-height: 46px;
+  padding: 0 1.4em;
+  border: 1px solid rgba(237, 237, 237, 0.4);
+  border-radius: 999px;
+  font-family: var(--ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--paper);
+  cursor: pointer;
+}
+.menu a.menu__c--solid { background: var(--ink); border-color: var(--ink); }
+.menu a.menu__c:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---- the dock ------------------------------------------------------------- */
+.dock {
+  position: fixed;
+  right: max(var(--edge), env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 70;
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(10, 6, 6, 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.45s var(--ease-out), translate 0.55s var(--ease-out);
+  pointer-events: none;
+}
+.dock[hidden] { display: none; }
+.dock.is-on { opacity: 1; translate: 0 0; pointer-events: auto; }
+
+.dock__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65em;
+  min-height: 40px;
+  padding: 0 1.25em;
+  border-radius: 999px;
+  font-family: var(--ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  transition: background 0.25s ease, color 0.25s ease;
+}
+.dock__btn:hover { background: rgba(255, 255, 255, 0.10); }
+.dock__btn--solid { background: var(--ink); }
+.dock__btn--solid:hover { background: var(--ink-hot); }
+
+/* ---- the finale block ------------------------------------------------------ */
+.fin__cta {
+  position: absolute;
+  z-index: 2;
+  left: clamp(22px, 6vw, 110px);
+  top: clamp(64px, 13vh, 150px);
+  width: min(40vw, 560px);
+  color: #170a0a;
+  pointer-events: auto;
+}
+.fin__ctaOver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9em;
+  margin: 0 0 clamp(10px, 1.6vh, 20px);
+  font-family: var(--ui);
+  font-size: clamp(10px, 0.8vw, 12.5px);
+  font-weight: 500;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: #5c3a35;
+}
+.fin__ctaOver::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1f9d55;
+  box-shadow: 0 0 0 4px rgba(31, 157, 85, 0.2);
+}
+.fin__ctaHead {
+  margin: 0;
+  font-family: var(--disp);
+  font-weight: 400;
+  font-size: clamp(60px, min(9.5vw, 16.5vh), 170px);
+  line-height: 0.88;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  color: #c4161a;
+}
+.fin__ctaSub {
+  margin: clamp(14px, 2.4vh, 26px) 0 0;
+  font-family: var(--ui);
+  font-size: clamp(13px, 1.05vw, 17px);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: #3a2422;
+  max-width: 34ch;
+}
+.fin__ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(18px, 3vh, 34px);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8em;
+  min-height: 48px;
+  padding: 0 1.5em;
+  border-radius: 999px;
+  border: 1.5px solid #170a0a;
+  font-family: var(--ui);
+  font-size: clamp(12px, 0.92vw, 14.5px);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: #170a0a;
+  transition: background 0.25s ease, color 0.25s ease, translate 0.25s var(--ease-out),
+              box-shadow 0.25s ease;
+}
+.btn--solid { background: #170a0a; color: #f4ead9; }
+.btn--solid:hover { background: #c4161a; border-color: #c4161a; translate: 0 -2px; box-shadow: 0 10px 24px rgba(120, 10, 12, 0.35); }
+.btn--line { text-transform: uppercase; letter-spacing: 0.2em; }
+.btn--line:hover { background: #170a0a; color: #f4ead9; translate: 0 -2px; }
+.btn:active { translate: 0 0; }
+.fin__cta :where(.btn, .copy):focus-visible { outline-color: #170a0a; }
+
+.fin__ctaCopy { margin: 12px 0 0; min-height: 32px; display: flex; align-items: center; gap: 12px; }
+.copy {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 8px 0;
+  font-family: var(--ui);
+  font-size: 11.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5c3a35;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-color: rgba(92, 58, 53, 0.45);
+  cursor: pointer;
+}
+.copy:hover { color: #170a0a; text-decoration-color: currentColor; }
+.copy__status { font-family: var(--ui); font-size: 11.5px; letter-spacing: 0.06em; color: #5c3a35; }
+
+/* The whispering row belongs to frame 1. Frame 2 slides over it and carries
+   its own contact block and copyright, so the row's pale type never lands on
+   the cream. */
+.fin__bar { z-index: 5; }
+.fin__bar a { padding: 8px 0; }
+.fin__ctaLegal {
+  position: absolute;
+  z-index: 2;
+  right: clamp(20px, 3.6vw, 62px);
+  bottom: 16px;
+  font-family: var(--ui);
+  font-size: clamp(8px, 0.66vw, 11px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(244, 234, 217, 0.62);
+}
+
+/* Portrait and narrow frames crop the poster to its red centre, so the block
+   moves to the bottom over a scrim and inverts. */
+@media (max-aspect-ratio: 1/1), (max-width: 760px) {
+  .fin__frame2::before {
+    content: '';
+    position: absolute;
+    inset: 38% 0 0 0;
+    z-index: 1;
+    background: linear-gradient(180deg, transparent, rgba(10, 2, 3, 0.86) 46%, rgba(10, 2, 3, 0.96));
+  }
+  .fin__cta {
+    left: 22px;
+    right: 22px;
+    top: auto;
+    bottom: clamp(92px, 15vh, 130px);
+    width: auto;
+    color: #f4ead9;
+  }
+  .fin__ctaOver, .copy, .copy__status { color: rgba(244, 234, 217, 0.72); }
+  .fin__ctaHead { color: #f4ead9; font-size: clamp(56px, 19vw, 96px); }
+  .fin__ctaHead br { display: none; }
+  .fin__frame2 img { object-position: 82% 42%; }
+  .fin__ctaLegal { left: 22px; right: auto; bottom: 22px; }
+  .fin__ctaSub { color: rgba(244, 234, 217, 0.82); font-size: 14px; }
+  .btn { flex: 1 1 100%; justify-content: center; border-color: rgba(244, 234, 217, 0.7); color: #f4ead9; }
+  .btn--solid { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .btn span { overflow-wrap: anywhere; }
+  .fin__cta :where(.btn, .copy):focus-visible { outline-color: #fff; }
+  .dock__btn { min-height: 44px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock, .btn, .hdr__cta, .hdr__link .ic { transition-duration: 0.01ms; }
+}
+
+/* header density: drop the secondary link before anything crowds the nav,
+   and leave phones to the menu, which carries both actions */
+@media (max-width: 1120px) { .hdr__link { display: none; } }
+@media (max-width: 760px) { .hdr__meta { display: none; } }
