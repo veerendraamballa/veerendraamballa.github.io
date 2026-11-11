@@ -1,6 +1,6 @@
 /* app.css */
 /* ==========================================================================
-   GIREESH — hero
+   VEERENDRA — hero
    The artwork itself (background, wordmark, the three people) is drawn on the
    WebGL canvas. Everything in this file is the furniture layered over it:
    header, welcome strip, chips, arrows, dot grids.
@@ -1451,14 +1451,14 @@ html { scroll-behavior: smooth; }
 /* ==========================================================================
    The finale — the closing shot.
    Deep black + dark red + crimson + cream. The furnace canvas sits behind a
-   giant GIREESH set in real type (Anton, stretched to the reference's
+   giant VEERENDRA set in real type (Anton, stretched to the reference's
    ultra-tall poster proportions, wearing the extracted grunge), the man's
    canvas rides in front of the title, and the editorial captions + the quiet
    functional row hold the edges.
    ========================================================================== */
 
 /* Two frames of one closing scene: the pinned stage holds frame 1 (the
-   GIREESH composition) while the extra scroll room drives frame 2 sliding in
+   VEERENDRA composition) while the extra scroll room drives frame 2 sliding in
    from the left over it. */
 .fin {
   position: relative;
