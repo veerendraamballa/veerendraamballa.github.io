@@ -99,16 +99,26 @@ html.is-booting .hdr { opacity: 0; }
    ========================================================================== */
 
 .hdr {
-  position: absolute; top: 0; left: 0; right: 0;
+  position: fixed; top: 0; left: 0; right: 0;
   height: var(--hdr-h);
   display: flex;
   align-items: center;
   gap: clamp(12px, 1.6vw, 26px);
   padding: 0 var(--edge);
-  z-index: 20;
+  z-index: 40;            /* above .flow (z-index:2) so the nav is clickable */
   pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
 }
 .hdr > * { pointer-events: auto; }
+
+/* The header belongs to the hero. Once the hero has scrolled fully past, lift
+   it out of the way so it never floats over the later scenes or blocks a tap
+   there. .past-hero is toggled on <html> by the hero-spacer observer. */
+.past-hero .hdr {
+  opacity: 0;
+  transform: translateY(-120%);
+  pointer-events: none;
+}
 
 .hdr__rule {
   position: absolute; left: 0; right: 0; top: 0;
@@ -390,8 +400,8 @@ html.is-booting .hdr { opacity: 0; }
    ========================================================================== */
 
 .menu {
-  position: absolute; inset: 0;
-  z-index: 18;
+  position: fixed; inset: 0;
+  z-index: 90;           /* above .flow and .hdr so the open sheet owns taps */
   display: grid;
   place-content: center;
   gap: 8px;

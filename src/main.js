@@ -288,6 +288,9 @@ if (heroWrap && 'IntersectionObserver' in window) {
   const spacer = document.querySelector('.hero-spacer');
   if (spacer) {
     new IntersectionObserver(([e]) => {
+      // The header lives with the hero: show it while any of the hero is on
+      // screen, lift it away once we have scrolled fully into the scenes.
+      root.classList.toggle('past-hero', !e.isIntersecting);
       const c = app.clips.hero;
       if (!c) return;
       app.heroOnScreen = e.isIntersecting;
